@@ -1,0 +1,9 @@
+north-star
+goals/5year
+goals/yearly
+goals/monthly
+goals/weekly
+daily
+projects
+council
+archive

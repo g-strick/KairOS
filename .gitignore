@@ -1,0 +1,13 @@
+# Vault content — private user data. Never commit these.
+daily/
+north-star/
+goals/
+projects/
+council/
+archive/
+inbox.md
+habits.md
+
+# But DO track example files and .gitkeep placeholders
+!*.example.md
+!.gitkeep
