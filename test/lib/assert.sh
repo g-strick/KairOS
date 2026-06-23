@@ -19,10 +19,10 @@ assert_dir() {
   local msg="${2:-directory $path}"
   if [[ -d "$path" ]]; then
     echo "  PASS: $msg"
-    ((ASSERT_PASSED++))
+    ASSERT_PASSED=$((ASSERT_PASSED + 1))
   else
     echo "  FAIL: $msg (not a directory, or missing: $path)"
-    ((ASSERT_FAILED++))
+    ASSERT_FAILED=$((ASSERT_FAILED + 1))
   fi
 }
 
@@ -33,10 +33,10 @@ assert_file() {
   local msg="${2:-file $path}"
   if [[ -f "$path" ]]; then
     echo "  PASS: $msg"
-    ((ASSERT_PASSED++))
+    ASSERT_PASSED=$((ASSERT_PASSED + 1))
   else
     echo "  FAIL: $msg (not a regular file, or missing: $path)"
-    ((ASSERT_FAILED++))
+    ASSERT_FAILED=$((ASSERT_FAILED + 1))
   fi
 }
 
@@ -48,10 +48,10 @@ assert_eq() {
   local msg="${3:-expected "$expected" equals actual}"
   if [[ "$expected" == "$actual" ]]; then
     echo "  PASS: $msg"
-    ((ASSERT_PASSED++))
+    ASSERT_PASSED=$((ASSERT_PASSED + 1))
   else
     echo "  FAIL: $msg (got '$actual')"
-    ((ASSERT_FAILED++))
+    ASSERT_FAILED=$((ASSERT_FAILED + 1))
   fi
 }
 
@@ -69,10 +69,10 @@ assert_exit_code() {
   "$@" || actual_code=$?
   if [[ "$actual_code" -eq "$expected_code" ]]; then
     echo "  PASS: $msg (exit $actual_code)"
-    ((ASSERT_PASSED++))
+    ASSERT_PASSED=$((ASSERT_PASSED + 1))
   else
     echo "  FAIL: $msg (expected $expected_code, got $actual_code)"
-    ((ASSERT_FAILED++))
+    ASSERT_FAILED=$((ASSERT_FAILED + 1))
   fi
 }
 
@@ -84,10 +84,10 @@ assert_contains() {
   local msg="${3:-file $file contains \"$substring\"}"
   if [[ -f "$file" ]] && grep -qF -- "$substring" "$file"; then
     echo "  PASS: $msg"
-    ((ASSERT_PASSED++))
+    ASSERT_PASSED=$((ASSERT_PASSED + 1))
   else
     echo "  FAIL: $msg"
-    ((ASSERT_FAILED++))
+    ASSERT_FAILED=$((ASSERT_FAILED + 1))
   fi
 }
 
@@ -99,10 +99,10 @@ assert_not_contains() {
   local msg="${3:-file $file does not contain \"$substring\"}"
   if [[ -f "$file" ]] && ! grep -qF -- "$substring" "$file"; then
     echo "  PASS: $msg"
-    ((ASSERT_PASSED++))
+    ASSERT_PASSED=$((ASSERT_PASSED + 1))
   else
     echo "  FAIL: $msg"
-    ((ASSERT_FAILED++))
+    ASSERT_FAILED=$((ASSERT_FAILED + 1))
   fi
 }
 

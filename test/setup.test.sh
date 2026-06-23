@@ -24,18 +24,23 @@ source "$SCRIPT_DIR/lib/assert.sh"
 
 # Run setup.sh non-interactively with given stdin input.
 # Usage: run_setup "path\ny"   or   run_setup "path\nn"
+# The sandbox path must be set in VAULT_SANDBOX by the caller.
 run_setup() {
   local input="$1"
-  local sandbox="$2"
+  local sandbox="${VAULT_SANDBOX:-}"
+  if [[ -z "$sandbox" ]]; then
+    echo "ERROR: run_setup requires VAULT_SANDBOX to be set by the caller" >&2
+    return 1
+  fi
   export KAIROS_VAULT="$sandbox"
   export KAIROS_YES="true"
   # If input has a 'n' (no-confirm), unset KAIROS_YES so confirm is forced.
-  if echo "$input" | grep -q '^n$'; then
+  if printf "%b" "$input" | grep -q $'^n$'; then
     unset KAIROS_YES
   fi
   # Pipe input to setup.sh; capture exit code.
   local exit_code=0
-  echo "$input" | bash "$SETUP" >/dev/null 2>&1 || exit_code=$?
+  printf "%b\n" "$input" | bash "$SETUP" >/dev/null 2>&1 || exit_code=$?
   unset KAIROS_VAULT
   unset KAIROS_YES
   return $exit_code
@@ -57,6 +62,7 @@ test_1_fresh_scaffold_dirs() {
   echo "Test 1: Fresh scaffold — vault directories"
   local sandbox
   sandbox="$(mktemp -d)"
+  VAULT_SANDBOX="$sandbox"
   trap 'rm -rf "$sandbox"' RETURN
 
   read_vault_dirs
@@ -73,6 +79,7 @@ test_2_fresh_scaffold_files() {
   echo "Test 2: Fresh scaffold — seed files"
   local sandbox
   sandbox="$(mktemp -d)"
+  VAULT_SANDBOX="$sandbox"
   trap 'rm -rf "$sandbox"' RETURN
 
   run_setup "$sandbox\ny"
@@ -88,6 +95,7 @@ test_3_existing_vault_cancel() {
   local sandbox
   sandbox="$(mktemp -d)"
   trap 'rm -rf "$sandbox"' RETURN
+  VAULT_SANDBOX="$sandbox"
 
   # Pre-populate the vault with a marker file.
   mkdir -p "$sandbox/north-star"
@@ -100,7 +108,7 @@ test_3_existing_vault_cancel() {
   echo -e "$sandbox\nn" | bash "$SETUP" >/dev/null 2>&1 || exit_code=$?
 
   # Vault should be untouched and setup should have exited non-zero.
-  assert_eq 0 "$exit_code" "setup.sh exits non-zero on Cancel" || true
+  assert_eq 1 "$exit_code" "setup.sh exits non-zero on Cancel" || true
   assert_file "$sandbox/north-star/existing.md" "pre-existing file still present"
   local post_count
   post_count="$(find "$sandbox" -type f | wc -l)"
@@ -113,9 +121,10 @@ test_4_no_confirm_creates_nothing() {
   local sandbox
   sandbox="$(mktemp -d)"
   trap 'rm -rf "$sandbox"' RETURN
+  VAULT_SANDBOX="$sandbox"
 
   # Run with 'n' at confirm prompt.
-  run_setup "$sandbox\nn"
+  run_setup "$sandbox\nn" || true
 
   # None of the expected dirs/files should exist.
   assert_not_exists() {
@@ -123,10 +132,10 @@ test_4_no_confirm_creates_nothing() {
     local msg="$2"
     if [[ ! -e "$path" ]]; then
       echo "  PASS: $msg (not created)"
-      ((ASSERT_PASSED++))
+      ASSERT_PASSED=$((ASSERT_PASSED + 1))
     else
       echo "  FAIL: $msg (should not exist, but does: $path)"
-      ((ASSERT_FAILED++))
+      ASSERT_FAILED=$((ASSERT_FAILED + 1))
     fi
   }
 
