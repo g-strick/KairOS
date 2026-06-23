@@ -2,4 +2,4 @@
 
 ## Milestones
 
-- ⬜ **M001: M001** (`depends:[—]`)
+- ✅ **M001: M001** (`depends:[—]`)

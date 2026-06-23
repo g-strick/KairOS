@@ -1,3 +1,3 @@
 # Queue
 
-- ⬜ **M001: M001**
+- No queued milestones.
