@@ -29,7 +29,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. User can run `setup.sh` and have `~/kairos/` scaffolded with all required vault directories and seed files (`north-star/`, `goals/`, `daily/`, `inbox.md`, `projects/`, `council/`, `habits.md`, `archive/`)
   3. `update.sh` copies only allowlisted engine paths into the vault — adding a file to the engine that is not on the allowlist does not copy it
   4. A `git push` on the engine repo is aborted if any tracked file matches the content-glob safety list (e.g., path contains `daily/`, `desired.md`, `dreaded.md`)
-**Plans**: TBD
+**Plans**: 3 plans
+- [ ] 01-01-PLAN.md — Walking Skeleton: engine structure, bash test harness, interactive setup.sh + full vault scaffold (Wave 1)
+- [ ] 01-02-PLAN.md — AGENTS.md canonical sections, /kairos-help skill, example content (Wave 2)
+- [ ] 01-03-PLAN.md — update.sh allowlist sync + pre-push content-glob safety hook (Wave 2)
 
 ### Phase 2: Onboarding + North Star
 **Goal**: User has completed the onboarding interview, written their desired and dreaded futures, and initialized their goal hierarchy
@@ -75,7 +78,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/3 | Not started | - |
 | 2. Onboarding + North Star | 0/TBD | Not started | - |
 | 3. Daily Rituals | 0/TBD | Not started | - |
 | 4. Weekly Cadence + Dashboard | 0/TBD | Not started | - |
