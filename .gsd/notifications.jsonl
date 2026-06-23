@@ -1,0 +1,4 @@
+{"id":"01c63293-23c3-4042-9550-e6bdc4508fdb","ts":"2026-06-23T23:09:31.810Z","severity":"warning","message":"Web search: Set BRAVE_API_KEY or use an Anthropic model for built-in search","source":"notify","read":false}
+{"id":"ded8a3fa-1dd5-4c03-868e-42f17ee76f8e","ts":"2026-06-23T23:27:39.646Z","severity":"warning","message":"[safety] destructive command: recursive delete","source":"workflow-logger","read":false}
+{"id":"81a6b16a-f405-4bca-bff6-8d78c366ac61","ts":"2026-06-23T23:30:12.517Z","severity":"warning","message":"[safety] destructive command: recursive delete","source":"workflow-logger","read":false}
+{"id":"6055fd20-c3f8-46b5-9af2-a44d79da7021","ts":"2026-06-23T23:31:03.917Z","severity":"warning","message":"[safety] destructive command: recursive delete","source":"workflow-logger","read":false}
