@@ -76,14 +76,73 @@ KairOS is a markdown-native personal operating system operated by a crew of AI a
 
 ## Conventions
 
-Conventions not yet established. Will populate as patterns emerge during development.
+### Bash scripts
+- All scripts: `#!/usr/bin/env bash` + `set -euo pipefail`
+- Bash 5.x required; scripts check `BASH_VERSINFO[0]` and exit with a `brew install bash` message on macOS if below 5
+- `shellcheck` must report zero errors on every script
+- GNU-only utilities are banned (`gdate`, `gnu-sed`, etc.) — write macOS/Linux portable code
+
+### Testing
+- Pure-bash test harness: source `test/lib/assert.sh` for `assert_dir`, `assert_file`, `assert_eq`, `assert_exit_code`
+- Tests drive scripts non-interactively via stdin piping and `KAIROS_*` env overrides; never touch `~/kairos`
+- TDD convention: commit failing (RED) test before implementing, then make it GREEN
+
+### Templates and single source of truth
+- Directory/path lists live in one canonical file (e.g. `templates/vault-dirs.txt`); scripts read from it, never duplicate inline
+- Seed files and templates ship in `templates/`; scripts reference `$SCRIPT_DIR` to locate them
+
+### Engine/vault boundary
+- Engine holds only behavior (scripts, skills, agents, templates, examples) — never real content
+- `.gitignore` excludes all vault content paths; add an entry for any new content-ish path
+- All content paths must appear in `hooks/content-globs.txt` (Phase 1 Plan 03) before any hook can enforce them
 <!-- GSD:conventions-end -->
 
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->
 
 ## Architecture
 
-Architecture not yet mapped. Follow existing patterns found in the codebase.
+### Engine directory layout (Phase 1 complete)
+
+```
+kairos-engine/
+├── setup.sh               # interactive vault scaffolder (Phase 1)
+├── update.sh              # allowlist-based engine→vault sync (Phase 1 Plan 03, pending)
+├── install-hooks.sh       # installs hooks into vault (Phase 1 Plan 03, pending)
+├── AGENTS.md              # canonical agent context (stub; fully populated in Phase 1 Plan 02)
+├── templates/
+│   ├── vault-dirs.txt     # canonical newline-delimited vault directory list (single source of truth)
+│   └── allowlist.txt      # safe engine paths update.sh may copy (Phase 1 Plan 03, pending)
+├── skills/                # Claude Code skill files (.md); one dir per skill
+├── agents/                # crew and council agent definitions
+├── hooks/
+│   ├── pre-push           # aborts push if tracked file matches content glob (pending)
+│   └── content-globs.txt  # content paths the hook checks (pending)
+├── styles/                # default output style + generator how-to
+├── examples/              # example vault content for development; files end in .example.md
+└── test/
+    ├── lib/assert.sh      # pure-bash assertion helpers (reused by all test scripts)
+    └── *.test.sh          # per-script end-to-end tests
+```
+
+### Vault layout (created by setup.sh)
+
+```
+~/kairos/
+├── AGENTS.md              # copied from engine on setup or update
+├── inbox.md               # zero-friction capture target
+├── habits.md              # habit tracker
+├── north-star/            # desired.md, dreaded.md
+├── goals/{5year,yearly,monthly,weekly}/
+├── daily/                 # daily notes
+├── projects/              # one dir per project
+├── council/               # council member definitions (derived from projects in Phase 2)
+└── archive/               # completed/closed items
+```
+
+### Key design decisions
+- `templates/vault-dirs.txt` is the single source of truth for vault directories; `setup.sh` and `test/setup.test.sh` both read it
+- Engine and vault are **separate git working trees** — not gitignore-based separation
+- No runtime dependency: every script must run with bash 5.x + standard POSIX utilities only
 <!-- GSD:architecture-end -->
 
 <!-- GSD:skills-start source:skills/ -->
