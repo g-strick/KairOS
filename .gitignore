@@ -1,18 +1,24 @@
-# KairOS engine — .gitignore
-# Exclude all vault content paths so private data cannot be tracked.
+# KairOS engine — vault content at repo root must never be tracked.
+# Patterns are anchored (leading /) so engine paths like skills/goals/ stay visible to git.
 
-# Vault directories
-daily/
-north-star/
-goals/
-projects/
-council/
-archive/
+/daily/
+/north-star/
+/goals/
+/projects/
+/council/
+/archive/
 
-# Vault seed files
-inbox.md
-habits.md
+/inbox.md
+/profile.md
+/habits.md
 
-# Allow example/placeholder files and .gitkeep
+# Example and placeholder files still ship
 !*.example.md
 !.gitkeep
+
+# GSD / local dev tooling (not part of the shipped engine)
+.gsd-id
+gsd-install-state.json
+gsd-migration-journal/
+.bg-shell/
+.claude/gsd-install-state.json
