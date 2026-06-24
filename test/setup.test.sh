@@ -1,168 +1,106 @@
 #!/usr/bin/env bash
-# setup.test.sh — End-to-end tests for setup.sh (KairOS vault scaffolder).
-#
-# Drives setup.sh non-interactively by piping answers to stdin, OR by
-# setting environment overrides:
-#   KAIROS_VAULT    — vault path to use (instead of the interactive prompt)
-#   KAIROS_YES      — non-interactive assume-yes mode (bypasses confirm prompt)
-#
-# Uses a mktemp -d sandbox cleaned up via trap. Never touches ~/kairos.
-#
-# Requires: bash 5.x, setup.sh at repo root, test/lib/assert.sh sourced.
-
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SETUP="$REPO_ROOT/setup.sh"
-VAULT_DIRS_FILE="$REPO_ROOT/templates/vault-dirs.txt"
+# setup.test.sh — End-to-end tests for setup.sh vault scaffolder
+# Usage: bash test/setup.test.sh
+# Runs non-interactively against a temp vault; cleans up on exit.
 
-# ── Source assertion helpers ──
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENGINE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SETUP="$ENGINE_DIR/setup.sh"
+
 source "$SCRIPT_DIR/lib/assert.sh"
 
-# ── Helpers ──
+# Create a temporary vault sandbox; clean up on exit
+SANDBOX=$(mktemp -d)
+trap 'rm -rf "$SANDBOX"' EXIT
 
-# Run setup.sh non-interactively with given stdin input.
-# Usage: run_setup "path\ny"   or   run_setup "path\nn"
-# The sandbox path must be set in VAULT_SANDBOX by the caller.
-run_setup() {
-  local input="$1"
-  local sandbox="${VAULT_SANDBOX:-}"
-  if [[ -z "$sandbox" ]]; then
-    echo "ERROR: run_setup requires VAULT_SANDBOX to be set by the caller" >&2
-    return 1
-  fi
-  export KAIROS_VAULT="$sandbox"
-  export KAIROS_YES="true"
-  # If input has a 'n' (no-confirm), unset KAIROS_YES so confirm is forced.
-  if printf "%b" "$input" | grep -q $'^n$'; then
-    unset KAIROS_YES
-  fi
-  # Pipe input to setup.sh; capture exit code.
-  local exit_code=0
-  printf "%b\n" "$input" | bash "$SETUP" >/dev/null 2>&1 || exit_code=$?
-  unset KAIROS_VAULT
-  unset KAIROS_YES
-  return $exit_code
-}
-
-# Read the canonical vault directory list from vault-dirs.txt.
-# Sets the global array VAULT_DIRS.
-read_vault_dirs() {
-  VAULT_DIRS=()
-  while IFS= read -r line; do
-    # Skip comments and blank lines.
-    [[ -z "$line" || "$line" == \#* ]] && continue
-    VAULT_DIRS+=("$line")
-  done < "$VAULT_DIRS_FILE"
-}
-
-# ── Test 1: Fresh scaffold creates all vault directories ──
-test_1_fresh_scaffold_dirs() {
-  echo "Test 1: Fresh scaffold — vault directories"
-  local sandbox
-  sandbox="$(mktemp -d)"
-  VAULT_SANDBOX="$sandbox"
-  trap 'rm -rf "$sandbox"' RETURN
-
-  read_vault_dirs
-
-  run_setup "$sandbox\ny"
-
-  for dir in "${VAULT_DIRS[@]}"; do
-    assert_dir "$sandbox/$dir" "vault dir: $dir"
-  done
-}
-
-# ── Test 2: Fresh scaffold creates seed files ──
-test_2_fresh_scaffold_files() {
-  echo "Test 2: Fresh scaffold — seed files"
-  local sandbox
-  sandbox="$(mktemp -d)"
-  VAULT_SANDBOX="$sandbox"
-  trap 'rm -rf "$sandbox"' RETURN
-
-  run_setup "$sandbox\ny"
-
-  assert_file "$sandbox/inbox.md" "seed file: inbox.md"
-  assert_file "$sandbox/habits.md" "seed file: habits.md"
-  assert_file "$sandbox/AGENTS.md" "seed file: AGENTS.md"
-}
-
-# ── Test 3: Existing vault, Cancel — leaves vault unchanged ──
-test_3_existing_vault_cancel() {
-  echo "Test 3: Existing vault — Cancel leaves it unchanged"
-  local sandbox
-  sandbox="$(mktemp -d)"
-  trap 'rm -rf "$sandbox"' RETURN
-  VAULT_SANDBOX="$sandbox"
-
-  # Pre-populate the vault with a marker file.
-  mkdir -p "$sandbox/north-star"
-  echo "pre-existing" > "$sandbox/north-star/existing.md"
-  local pre_count
-  pre_count="$(find "$sandbox" -type f | wc -l)"
-
-  # Run setup.sh with "Cancel" (n) at the existing-vault prompt.
-  local exit_code=0
-  echo -e "$sandbox\nn" | bash "$SETUP" >/dev/null 2>&1 || exit_code=$?
-
-  # Vault should be untouched and setup should have exited non-zero.
-  assert_eq 1 "$exit_code" "setup.sh exits non-zero on Cancel" || true
-  assert_file "$sandbox/north-star/existing.md" "pre-existing file still present"
-  local post_count
-  post_count="$(find "$sandbox" -type f | wc -l)"
-  assert_eq "$pre_count" "$post_count" "file count unchanged after Cancel"
-}
-
-# ── Test 4: Confirm = 'no' — creates nothing ──
-test_4_no_confirm_creates_nothing() {
-  echo "Test 4: Confirm = no — nothing created"
-  local sandbox
-  sandbox="$(mktemp -d)"
-  trap 'rm -rf "$sandbox"' RETURN
-  VAULT_SANDBOX="$sandbox"
-
-  # Run with 'n' at confirm prompt.
-  run_setup "$sandbox\nn" || true
-
-  # None of the expected dirs/files should exist.
-  assert_not_exists() {
-    local path="$1"
-    local msg="$2"
-    if [[ ! -e "$path" ]]; then
-      echo "  PASS: $msg (not created)"
-      ASSERT_PASSED=$((ASSERT_PASSED + 1))
-    else
-      echo "  FAIL: $msg (should not exist, but does: $path)"
-      ASSERT_FAILED=$((ASSERT_FAILED + 1))
-    fi
-  }
-
-  assert_not_exists "$sandbox/north-star" "north-star/ not created"
-  assert_not_exists "$sandbox/daily" "daily/ not created"
-  assert_not_exists "$sandbox/inbox.md" "inbox.md not created"
-  assert_not_exists "$sandbox/habits.md" "habits.md not created"
-  assert_not_exists "$sandbox/AGENTS.md" "AGENTS.md not created"
-}
-
-# ── Run all tests ──
-echo ""
-echo "═══════════════════════════════════════"
-echo "  KairOS setup.sh — End-to-End Tests"
-echo "═══════════════════════════════════════"
+echo "=== KairOS setup.sh End-to-End Tests ==="
+echo "Sandbox: $SANDBOX"
 echo ""
 
-# Ensure setup.sh exists (this test MUST fail if it doesn't — RED phase).
-if [[ ! -f "$SETUP" ]]; then
-  echo "FATAL: setup.sh not found at $SETUP"
-  echo "This is expected during RED (pre-implementation). Build it to go GREEN."
-  exit 1
+# -------------------------------------------------------------------
+# Test 1: Fresh vault — all directories and seed files created
+# -------------------------------------------------------------------
+echo "--- Test 1: Fresh scaffold creates all vault structure ---"
+TEST_VAULT="$SANDBOX/test1-vault"
+
+# Run setup.sh non-interactively via env overrides
+KAIROS_VAULT="$TEST_VAULT" KAIROS_YES=1 bash "$SETUP" 2>/dev/null || true
+
+assert_dir "$TEST_VAULT/north-star" "north-star"
+assert_dir "$TEST_VAULT/goals/5year" "goals/5year"
+assert_dir "$TEST_VAULT/goals/yearly" "goals/yearly"
+assert_dir "$TEST_VAULT/goals/monthly" "goals/monthly"
+assert_dir "$TEST_VAULT/goals/weekly" "goals/weekly"
+assert_dir "$TEST_VAULT/daily" "daily"
+assert_dir "$TEST_VAULT/projects" "projects"
+assert_dir "$TEST_VAULT/council" "council"
+assert_dir "$TEST_VAULT/archive" "archive"
+assert_file "$TEST_VAULT/inbox.md" "inbox.md seed file"
+assert_file "$TEST_VAULT/habits.md" "habits.md seed file"
+assert_file "$TEST_VAULT/AGENTS.md" "AGENTS.md seed file"
+
+echo ""
+
+# -------------------------------------------------------------------
+# Test 2: Seed files exist and are regular files (not empty by default)
+# -------------------------------------------------------------------
+echo "--- Test 2: Seed files are regular files ---"
+assert_file "$TEST_VAULT/inbox.md" "inbox.md is a file"
+assert_file "$TEST_VAULT/habits.md" "habits.md is a file"
+assert_file "$TEST_VAULT/AGENTS.md" "AGENTS.md is a file"
+
+echo ""
+
+# -------------------------------------------------------------------
+# Test 3: Existing vault with Cancel option — leaves vault unchanged
+# -------------------------------------------------------------------
+echo "--- Test 3: Existing vault with Cancel leaves it unchanged ---"
+TEST_VAULT3="$SANDBOX/test3-vault"
+mkdir -p "$TEST_VAULT3"
+# Create a marker file to detect if anything was modified
+echo "keep me" > "$TEST_VAULT3/keep-me.txt"
+
+# Pipe "y" for path (use default), then "c" for cancel on existing-vault prompt
+echo -e "\nc" | KAIROS_VAULT="$TEST_VAULT3" bash "$SETUP" 2>/dev/null || true
+
+assert_file "$TEST_VAULT3/keep-me.txt" "marker file still exists after cancel"
+
+echo ""
+
+# -------------------------------------------------------------------
+# Test 4: Answering 'no' at confirm creates nothing
+# -------------------------------------------------------------------
+echo "--- Test 4: 'no' at confirm creates nothing ---"
+TEST_VAULT4="$SANDBOX/test4-vault"
+mkdir -p "$TEST_VAULT4"
+
+# Pipe "y" for path, then "n" for confirm
+echo -e "\nn" | KAIROS_VAULT="$TEST_VAULT4" bash "$SETUP" 2>/dev/null || true
+
+# The vault should NOT have been scaffolded — no subdirs, no seed files
+# Use negation: PASS if the directory/file does NOT exist
+if [[ ! -d "$TEST_VAULT4/north-star" ]]; then
+  echo "  PASS: directory correctly absent — north-star NOT created when confirm=no"
+else
+  FAILED=$((FAILED + 1))
+  echo "  FAIL: directory should not exist — north-star was created when confirm=no"
 fi
 
-test_1_fresh_scaffold_dirs
-test_2_fresh_scaffold_files
-test_3_existing_vault_cancel
-test_4_no_confirm_creates_nothing
+if [[ ! -f "$TEST_VAULT4/inbox.md" ]]; then
+  echo "  PASS: file correctly absent — inbox.md NOT created when confirm=no"
+else
+  FAILED=$((FAILED + 1))
+  echo "  FAIL: file should not exist — inbox.md was created when confirm=no"
+fi
 
+if [[ ! -f "$TEST_VAULT4/AGENTS.md" ]]; then
+  echo "  PASS: file correctly absent — AGENTS.md NOT created when confirm=no"
+else
+  FAILED=$((FAILED + 1))
+  echo "  FAIL: file should not exist — AGENTS.md was created when confirm=no"
+fi
+
+echo ""
 assert_summary

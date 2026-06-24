@@ -1,43 +1,37 @@
-# KairOS — Agent Context
+# KairOS
 
-## The Crew
+**Vault:** KairOS · **Path:** `~/kairos` (injected at runtime by the session-start hook) · **Date:** `{{CURRENT_DATE}}` · **Backend:** backend-agnostic — works under Claude Code, Codex, Gemini, Ollama, or any local LLM runner that supports Markdown context files.
 
-The crew operates the system. Their definitions live in `agents/`.
+---
 
-| Agent | Role |
-|-------|------|
-| **Concierge** | First contact. Runs onboarding and periodic re-calibration. |
-| **Sorter** | Triages the inbox — decides where each captured item goes. |
-| **Steward** | Checks days against aims and flags drift (Architect + Undertow voices). |
-| **Scribe** | Sits with you for weekly and monthly reflection; learns your style. |
-| **Keeper** | Hygiene — archives finished work, keeps the structure clean. |
-
-### Council
-
-The Council is derived from your projects during onboarding. Standard advisors ship with the engine:
+## Crew
 
 | Agent | Role |
 |-------|------|
-| **Life Coach** | Goal achievement, habit formation, motivation. |
-| **Strategic Advisor** | Big-picture thinking, decision-making, trade-off analysis. |
-| **Accountability Partner** | Follow-through, commitment tracking, gentle pressure. |
+| **Sorter** | Triages the inbox — routes captured items to the right project, daily note, or habits file. |
+| **Steward** | Runs the daily rhythm — morning focus (goals + calendar + reminders) and evening reflection (what happened, what changed). |
+| **Scribe** | Writes weekly and monthly reviews — synthesises past days into structured reflections and progress reports. |
+| **Keeper** | Maintains vault hygiene — archives finished work, keeps goals and projects tidy. |
+| **Concierge** | First-contact and onboarding — guides new users through setup, goal-setting, and periodic recalibration. |
 
-Summon any Council agent on demand — they don't run automatically.
+---
 
-## Skills
+## Active Style
 
-The interactive rituals live in `skills/`.
+`styles/default.md`
 
-| Skill | Command | Purpose |
-|-------|---------|---------|
-| Onboarding | `/kairos-onboard` | Semi-structured interview: name, timezone, priorities, habits |
-| North Star | `/kairos-north-star` | Guided desired/dreaded interview (Future Authoring) |
-| Goals | `/kairos-goals` | Scaffold goal hierarchy (5-year → yearly → monthly → weekly) |
-| Capture | `/kairos-capture` | Zero-friction dump to inbox.md |
-| Sort | `/kairos-sort` | Process inbox, route items, confirm with user |
-| Morning | `/kairos-morning` | Daily planning: focus, habits, weekly focus |
-| Weekly | `/kairos-weekly` | Guided review of past week, plan next week |
+The style system is built in a later phase. For now, all output uses the default voice defined in that file. Set a different style with `/kairos-set-style` (Phase 4+).
 
-## Output Style
+---
 
-The default style is defined in `styles/`.
+## Skill Quick-Reference
+
+| Command | Description |
+|---------|-------------|
+| `/kairos-help` | Lists available commands and explains the engine-vs-vault and crew-vs-council model. |
+
+> More `/kairos-*` commands arrive in later phases: capture, sort, morning, evening, weekly, monthly, cleanup, onboarding, and more.
+
+---
+
+*Canonical context root — every agent and skill reads this file first. Domain knowledge loads on demand; this file is a map, not the territory.*

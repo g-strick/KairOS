@@ -34,8 +34,8 @@ check_bash_version() {
 # ── Read canonical vault directory list ──
 read_vault_dirs() {
   VAULT_DIRS=()
-  while IFS= read -r line; do
-    [[ -z "$line" || "$line" == \#* ]] && continue
+  while IFS= read -r line || [[ -n "$line" ]]; do
+     [[ -z "$line" || "$line" == \#* ]] && continue
     VAULT_DIRS+=("$line")
   done < "$VAULT_DIRS_FILE"
 }

@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# hooks/pre-push — Pre-push content-glob safety hook
+# Driven by plan 01-03 (Foundation, plan 03)
+#
+# Scans the repo's tracked files against the content-glob safety list.
+# If any tracked file matches a vault content pattern, aborts the push
+# with a clear message naming the offending file(s).
+#
+# This is the last line of defense before private vault content reaches
+# the public engine remote. The structural defense (.gitignore + physically-
+# separate vault) makes a leak impossible even if this hook is bypassed
+# via `git push --no-verify`.
+
+# When installed at .git/hooks/pre-push: SCRIPT_DIR = .git/hooks
+# .git/hooks/.. = .git (not the repo root)
+# .git/.. = repo root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+GLOBS_FILE="$REPO_ROOT/hooks/content-globs.txt"
+
+if [ ! -f "$GLOBS_FILE" ]; then
+  echo "WARNING: content-globs.txt not found, skipping pre-push check" >&2
+  exit 0
+fi
+
+# Get list of tracked files in the repo
+TRACKED=$(git ls-files 2>/dev/null) || {
+  echo "WARNING: not a git repository, skipping pre-push check" >&2
+  exit 0
+}
+
+# Check each tracked file against each glob pattern
+FOUND_OFFENDER=""
+while IFS= read -r pattern || [ -n "$pattern" ]; do
+   # Skip empty lines and comments
+  [[ -z "$pattern" || "$pattern" =~ ^# ]] && continue
+
+   # Convert glob pattern to grep regex
+   # daily/ means files starting with "daily/"
+  grep_pattern="^${pattern}"
+
+  while IFS= read -r file; do
+    [ -z "$file" ] && continue
+    if echo "$file" | grep -qE "$grep_pattern"; then
+      FOUND_OFFENDER="${FOUND_OFFENDER}   - ${file} (matches ${pattern})
+"
+    fi
+  done <<< "$TRACKED"
+done < "$GLOBS_FILE"
+
+if [ -n "$FOUND_OFFENDER" ]; then
+  echo "⛔ PRE-PUSH BLOCKED: Vault content detected in engine repo" >&2
+  echo "" >&2
+  echo "The following tracked files match content-globs.txt patterns:" >&2
+  echo -e "$FOUND_OFFENDER" >&2
+  echo "Committing vault content to the public engine is blocked." >&2
+  echo "" >&2
+  echo "To fix, choose one of:" >&2
+  echo "  1. Move the file to a physically separate vault directory (recommended)" >&2
+  echo "  2. Add the path to .gitignore if it should not be tracked" >&2
+  echo "  3. Use \`git push --no-verify\` to bypass this hook (not recommended)" >&2
+  exit 1
+fi
+
+# No offenders found — safe to push
+exit 0

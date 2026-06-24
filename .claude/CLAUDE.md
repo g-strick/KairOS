@@ -1,5 +1,13 @@
 <!-- GSD:project-start source:PROJECT.md -->
 
+## Context Root
+
+AGENTS.md in the vault root is the canonical context file. Every agent and skill reads it first.
+It contains the crew roster, active style pointer, and skill quick-reference. Domain knowledge loads
+on demand — this file is a map, not the territory.
+
+<!-- GSD:context-root-end -->
+
 ## Project
 
 **KairOS**

@@ -1,0 +1,6 @@
+skills/
+agents/
+hooks/
+styles/
+templates/
+AGENTS.md
