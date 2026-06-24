@@ -2,52 +2,73 @@
 
 ## Overview
 
-Two phases close the lean v1 kit. Phase 1 makes the engine cloneable and the vault safe. Phase 2 proves the daily loop: onboard, capture, daily. Everything else is parked in `docs/EXPANSIONS.md` — not phased until deliberately promoted.
+Four phases to a usable daily loop. **Current focus: Phase 3 — use the system and log friction** before adding features from `docs/EXPANSIONS.md`.
 
 ## Phases
 
-- [ ] **Phase 1: Foundation** — Engine/vault structure is cloneable, scaffoldable, and structurally safe
-- [ ] **Phase 2: Daily proof** — User can onboard, capture, and run a daily check-in that reads inbox
+- [x] **Phase 0.5: Reconciliation** — Repo, docs, and tests agree on product shape
+- [x] **Phase 1: Foundation** — setup, update, hooks, `/help` *(skills synced; validate hooks in your environment)*
+- [x] **Phase 2: Daily proof** — `/onboard`, `/capture`, `/daily` skill specs shipped
+- [ ] **Phase 3: Validation** — 7–14 days real use; promote one expansion if friction repeats
 
-## Phase Details
+## Phase details
 
-### Phase 1: Foundation
+### Phase 0.5: Reconciliation ✓
 
-**Goal**: User can clone the engine, run `setup.sh`, and have a structurally safe minimal vault  
-**Depends on**: Nothing  
-**Requirements**: FOUND-01 through FOUND-05  
+Repo, tests, and docs describe the same product: unprefixed commands, skills-only, no crew/council, parked agent personas.
 
-**Success Criteria**:
+### Phase 1: Foundation ✓
 
-1. Clone finds `skills/`, `hooks/`, `styles/`, `templates/`, valid `AGENTS.md`
-2. `setup.sh` creates `~/kairos/` with `daily/`, `inbox.md`, `AGENTS.md` only
-3. `update.sh` copies only allowlisted paths
-4. Pre-push hook blocks vault content globs
-5. `/help` explains engine vs vault and lists shipped commands
+**Vault scaffold** (`setup.sh`):
 
-**Plans**: 3 plans (01-01, 01-02, 01-03) — *may need refresh for lean scaffold and unprefixed commands*
+```
+inbox/, daily/, projects/, someday/, archive/, AGENTS.md, inbox/README.md
+```
 
-### Phase 2: Daily proof
+**Engine:** `update.sh` (allowlist sync), `hooks/pre-push` + `content-globs.txt`, four skills in `skills/`.
 
-**Goal**: User runs `/onboard`, `/capture`, and `/daily` as a working habit  
-**Depends on**: Phase 1  
-**Requirements**: DAILY-01 through DAILY-03  
+**Verify locally:**
 
-**Success Criteria**:
+```bash
+bash test/setup.test.sh
+bash test/lean-v1.test.sh
+bash test/update.test.sh
+bash test/pre-push.test.sh   # requires git write in sandbox
+```
 
-1. `/onboard` writes `profile.md`
-2. `/capture` appends to `inbox.md` without categorization
-3. `/daily` reads inbox, records one focus in `daily/YYYY-MM-DD.md`
+### Phase 2: Daily proof ✓
 
-**Plans**: TBD — replace obsolete `02-onboarding-north-star` plans
+| Skill | Delivers |
+|-------|----------|
+| `/onboard` | `profile.md` |
+| `/capture` | New file in `inbox/` |
+| `/daily` | Reads `inbox/`, one focus, writes `daily/YYYY-MM-DD.md` |
+
+Specs live in `skills/*/SKILL.md`. **UAT:** run the loop in your vault for real.
+
+### Phase 3: Validation (current)
+
+**Goal:** Prove capture + daily before building `/sort`, `/weekly`, etc.
+
+Track:
+
+- Was capture fast enough?
+- Was daily short enough?
+- Did `inbox/` become intimidating?
+- Did you return the next day?
+- What did you wish existed more than once?
+
+**Rule:** Promote **one** item from `docs/EXPANSIONS.md` only after repeated friction.
 
 ## Parked
 
-See `docs/EXPANSIONS.md`. No Phase 3+ until items are promoted via GSD.
+See `docs/EXPANSIONS.md`. No Phase 4+ until promotion through planning.
 
 ## Progress
 
-| Phase | Plans Complete | Status |
-|-------|----------------|--------|
-| 1. Foundation | 0/3 | Not started |
-| 2. Daily proof | 0/TBD | Not started |
+| Phase | Status |
+|-------|--------|
+| 0.5 Reconciliation | Complete |
+| 1 Foundation | Complete (verify hooks locally) |
+| 2 Daily proof | Skills shipped — UAT pending |
+| 3 Validation | **In progress** |

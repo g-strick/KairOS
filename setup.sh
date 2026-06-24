@@ -161,8 +161,10 @@ if [[ -z "${KAIROS_YES:-}" ]]; then
   done
   echo ""
   echo "  Seed files:"
-  echo "    · inbox.md"
-  echo "    · habits.md"
+  echo "    · inbox/README.md"
+  echo "    · goals/current.md"
+  echo "    · daily/TEMPLATE.md"
+  echo "    · _engine/ (NOW, BACKLOG, HANDOFF, ENGINE-PIN)"
   echo "    · AGENTS.md"
   echo ""
   echo "═══════════════════════════════════════════════════════"
@@ -184,19 +186,34 @@ for dir in "${VAULT_DIRS[@]}"; do
 done
 
 # Create seed files
-echo "# Inbox — capture anything here, then run /kairos-sort to process." \
-  > "$VAULT_PATH/inbox.md"
+cat > "$VAULT_PATH/inbox/README.md" << 'EOF'
+# Inbox
 
-echo "# Habits — track daily habit streaks. Updated by the Steward." \
-  > "$VAULT_PATH/habits.md"
+Drop anything here: notes, documents, videos, folders.
+
+- `/capture` creates a timestamped `.md` file for quick text captures
+- Review during `/daily`; move items to `projects/`, `someday/`, or `archive/` when ready
+EOF
 
 # Copy AGENTS.md from engine
 cp "$SCRIPT_DIR/AGENTS.md" "$VAULT_PATH/AGENTS.md"
+
+# Copy vault seed files (templates/vault-seeds/ → vault)
+SEEDS_DIR="$SCRIPT_DIR/templates/vault-seeds"
+if [[ -d "$SEEDS_DIR" ]]; then
+  while IFS= read -r -d '' seed; do
+    rel="${seed#"$SEEDS_DIR"/}"
+    dest="$VAULT_PATH/$rel"
+    mkdir -p "$(dirname "$dest")"
+    cp "$seed" "$dest"
+  done < <(find "$SEEDS_DIR" -type f -print0)
+fi
 
 echo ""
 echo "✓ Vault scaffolded at $VAULT_PATH"
 echo ""
 echo "Next steps:"
 echo "  cd $VAULT_PATH"
-echo "  # Then run /kairos-onboard to complete onboarding"
+echo "  $SCRIPT_DIR/update.sh $VAULT_PATH    # sync skills into vault"
+echo "  # Open in Cursor → read _engine/HANDOFF.md → /onboard → /capture → /daily"
 echo ""

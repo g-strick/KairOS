@@ -1,18 +1,18 @@
 # KairOS engine — .gitignore
-# Exclude all vault content paths so private data cannot be tracked.
+# Exclude vault content paths so private data cannot be tracked in the engine repo.
 
 # Vault directories
-daily/
-north-star/
-goals/
-projects/
-council/
-archive/
+/inbox/
+/daily/
+/goals/
+/projects/
+/someday/
+/archive/
+/scripts/
+/_engine/
 
-# Vault seed files
-inbox.md
-habits.md
+# Vault files
+/profile.md
 
-# Allow example/placeholder files and .gitkeep
-!*.example.md
+# Allow placeholders
 !.gitkeep

@@ -1,9 +1,11 @@
-north-star
-goals/5year
-goals/yearly
-goals/monthly
-goals/weekly
+inbox
 daily
 projects
-council
+someday
 archive
+goals
+scripts
+_engine/experiments
+_engine/drafts/skills
+_engine/handoffs
+_engine/archive

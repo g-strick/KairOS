@@ -1,6 +1,6 @@
 # Contributing to KairOS
 
-Thanks for helping improve the engine. This repo is the **public tool** — never commit vault content (`inbox.md`, `daily/`, `profile.md`, etc.). See [DEVELOPMENT.md](DEVELOPMENT.md) for the engine/vault split.
+Thanks for helping improve the engine. This repo is the **public tool** — never commit vault content (`inbox/`, `daily/`, `profile.md`, etc.). See [DEVELOPMENT.md](DEVELOPMENT.md) for the engine/vault split.
 
 ## Branching strategy
 
@@ -79,8 +79,8 @@ Keep scopes short and meaningful:
 ### Examples (from this repo)
 
 ```
-feat(capture): add /capture skill for inbox append
-test(setup): assert minimal vault scaffold
+feat(capture): add /capture skill — new file in inbox/
+test(setup): assert inbox/ folder scaffold
 docs(02): replan phase 2 as daily proof
 fix(hooks): add profile.md to content globs
 ```
@@ -108,8 +108,8 @@ feat(01-01): implement setup.sh minimal vault
 
 ### Before opening
 
-1. Run tests: `bash test/setup.test.sh` and `bash test/m002.test.sh` (add others as they land).
-2. Confirm no vault content in the diff: `git diff --name-only master` should not list `inbox.md`, `daily/`, etc.
+1. Run tests: `bash test/setup.test.sh` and `bash test/lean-v1.test.sh` (add others as they land).
+2. Confirm no vault content in the diff: `git diff --name-only master` should not list `inbox/`, `daily/`, etc.
 3. For public-facing PRs, consider `/gsd-pr-branch` to drop `.planning/` churn.
 
 ### PR title
@@ -157,7 +157,7 @@ The template in `.github/pull_request_template.md` is the source of truth. At mi
 /gsd-execute-phase 1
 
 # Tests
-bash test/setup.test.sh && bash test/m002.test.sh
+bash test/setup.test.sh && bash test/lean-v1.test.sh && bash test/update.test.sh
 
 # Clean PR branch
 /gsd-pr-branch master
