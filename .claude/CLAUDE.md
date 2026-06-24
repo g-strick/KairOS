@@ -12,7 +12,7 @@ on demand — this file is a map, not the territory.
 
 **KairOS**
 
-KairOS is a markdown-native personal operating system operated by slash commands. The lean kit ships `/help`, `/onboard`, `/capture`, and `/daily` — capture to inbox, daily check-in, with engine/vault structural separation for privacy. No app, no database: Markdown files, skills, bash hooks, and git.
+KairOS is a markdown-native personal operating system. Ships `/help`, `/onboard`, `/capture`, `/daily` with engine/vault separation. Author-first, public engine. See `docs/VAULT.md` for vault layout.
 
 **Core Value:** The ritual and structure are what make a system stick. KairOS is a set of interactive check-ins at different cadences — not a screen to stare at.
 
@@ -107,7 +107,7 @@ KairOS is a markdown-native personal operating system operated by slash commands
 ### Git workflow
 - **Branching:** GSD phase branches (`gsd/phase-{NN}-{slug}`); ad-hoc work on `fix/{slug}` or `docs/{slug}` off `master`
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/) — `type(scope): subject` (e.g. `feat(capture):`, `test(01):`, `docs(02):`)
-- **PRs:** Use `.github/pull_request_template.md`; run `bash test/setup.test.sh` and `bash test/m002.test.sh` before opening
+- **PRs:** Use `.github/pull_request_template.md`; run `bash test/setup.test.sh`, `bash test/lean-v1.test.sh`, `bash test/update.test.sh` before opening
 - **Clean PRs:** `/gsd-pr-branch master` filters `.planning/` commits for reviewer-facing PRs
 - Full guide: `docs/CONTRIBUTING.md`
 <!-- GSD:conventions-end -->
@@ -116,38 +116,24 @@ KairOS is a markdown-native personal operating system operated by slash commands
 
 ## Architecture
 
-### Engine directory layout (Phase 1 complete)
+### Engine directory layout
 
 ```
 kairos-engine/
-├── setup.sh               # interactive vault scaffolder (Phase 1)
-├── update.sh              # allowlist-based engine→vault sync (Phase 1 Plan 03, pending)
-├── install-hooks.sh       # installs hooks into vault (Phase 1 Plan 03, pending)
-├── AGENTS.md              # canonical agent context (stub; fully populated in Phase 1 Plan 02)
-├── templates/
-│   ├── vault-dirs.txt     # canonical newline-delimited vault directory list (single source of truth)
-│   └── allowlist.txt      # safe engine paths update.sh may copy (Phase 1 Plan 03, pending)
-├── skills/                # Claude Code skill files (.md); one dir per skill
-├── agents/                # crew and council agent definitions
-├── hooks/
-│   ├── pre-push           # aborts push if tracked file matches content glob (pending)
-│   └── content-globs.txt  # content paths the hook checks (pending)
-├── styles/                # default output style + generator how-to
-├── examples/              # example vault content for development; files end in .example.md
+├── setup.sh / update.sh / install-hooks.sh
+├── AGENTS.md
+├── templates/vault-dirs.txt
+├── templates/allowlist.txt
+├── skills/                # help, onboard, capture, daily
+├── agents/                # empty (.gitkeep) — personas in docs/parked/
+├── hooks/pre-push
+├── hooks/content-globs.txt
 └── test/
-    ├── lib/assert.sh      # pure-bash assertion helpers (reused by all test scripts)
-    └── *.test.sh          # per-script end-to-end tests
 ```
 
-### Vault layout (created by setup.sh)
+### Vault layout (setup.sh)
 
-```
-~/kairos/
-├── AGENTS.md              # copied from engine on setup or update
-├── inbox.md               # capture target (/capture)
-├── profile.md             # from /onboard
-└── daily/                 # daily notes (/daily)
-```
+See `docs/VAULT.md`. Summary: `inbox/`, `daily/`, `projects/`, `someday/`, `archive/`, `AGENTS.md`, `profile.md` (from /onboard).
 
 ### Key design decisions
 - `templates/vault-dirs.txt` is the single source of truth for vault directories; `setup.sh` and `test/setup.test.sh` both read it

@@ -2,53 +2,57 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 1
-current_phase_name: Foundation
-status: planned
-stopped_at: Lean scope cut — two phases only; replan Phase 2 daily proof
-last_updated: "2026-06-24T12:00:00.000Z"
+current_phase: 3
+current_phase_name: Validation
+status: in_progress
+stopped_at: Docs aligned — ready for real-world use
+last_updated: "2026-06-24T20:00:00.000Z"
 last_activity: 2026-06-24
-last_activity_desc: Implemented lean naming — unprefixed skills, /daily, EXPANSIONS.md, minimal vault
+last_activity_desc: Documentation cleanup; inbox/ folder; skills shipped
 progress:
-  total_phases: 2
-  completed_phases: 0
+  total_phases: 4
+  completed_phases: 2
   total_plans: 3
   completed_plans: 0
-  percent: 0
+  percent: 75
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-06-24)
+See: `.planning/PROJECT.md`, `docs/VAULT.md`
 
 **Core value:** Interactive check-ins you run — not a dashboard you stare at.  
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 3 — Validation (use `/onboard` → `/capture` → `/daily` for 7–14 days)
 
 ## Current Position
 
-Phase: 1 of 2 (Foundation)  
-Status: Ready to execute (plans may need refresh for lean scaffold)  
-Last activity: 2026-06-24 — Lean scope and naming implemented in engine docs/skills
+Phase: 3 of 4 (Validation)  
+Status: Ready to dogfood  
+Last activity: 2026-06-24 — Doc cleanup; canonical `docs/VAULT.md`; inbox as folder
 
-Progress: [░░░░░░░░░░] 0%
+## Shipped
 
-## Accumulated Context
+| Area | Status |
+|------|--------|
+| Vault scaffold | `inbox/`, `daily/`, `projects/`, `someday/`, `archive/` |
+| Skills | `/help`, `/onboard`, `/capture`, `/daily` |
+| Scripts | `setup.sh`, `update.sh`, `install-hooks.sh` |
+| Safety | `.gitignore`, `hooks/content-globs.txt`, `hooks/pre-push` |
+| Tests | `setup.test.sh`, `lean-v1.test.sh`, `update.test.sh` |
 
-### Decisions
+## Decisions (stable)
 
-- Two phases only; EXPANSIONS.md for parked ideas
-- Skills only — no agent persona files in v1
+- Author-first, public engine — others welcome to clone
 - Commands: `/help`, `/onboard`, `/capture`, `/daily` (no `kairos-` prefix)
-- Minimal vault: `daily/`, `inbox.md`, `profile.md` (profile from onboard)
-- Obsolete: `02-onboarding-north-star` plans — replan as daily proof
-- Git: `branching_strategy: phase`, conventional commits — see `docs/CONTRIBUTING.md`
+- `inbox/` is a folder (files, media, folders) — not `inbox.md`
+- Skills only — agent personas parked in `docs/parked/agents/`
+- Expansions earn promotion via Phase 3 friction log
 
-### Blockers/Concerns
+## Next actions
 
-- Phase 1 plans (01-02, 01-03) and m002 gate still reference old north-star/council scope — refresh on execute
-
-## Session Continuity
-
-Resume file: `.planning/phases/01-foundation/01-CONTEXT.md`
+1. `./setup.sh` (or migrate existing `~/kairos`)
+2. `update.sh ~/kairos` to sync skills into vault
+3. Run `/onboard` → `/capture` → `/daily` daily for 7–14 days
+4. Note friction; pick one expansion if needed

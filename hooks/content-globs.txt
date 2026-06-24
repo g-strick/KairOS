@@ -1,16 +1,11 @@
 # content-globs.txt — Vault content glob safety list
-# Driven by plan 01-03 (Foundation, plan 03)
-#
-# Each line is a glob pattern matched against tracked files.
-# If a tracked file matches, the pre-push hook aborts the push.
-# shellcheck disable=SC2148,SC2287
+# If a tracked file matches, pre-push aborts.
+inbox/
 daily/
-north-star/
 goals/
 projects/
-council/
+someday/
 archive/
-inbox.md
-habits.md
-desired.md
-dreaded.md
+scripts/
+_engine/
+profile.md

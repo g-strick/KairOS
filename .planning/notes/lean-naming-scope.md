@@ -45,7 +45,7 @@ Decisions from explore session:
 
 | Current (FOUND-05) | Proposed Phase 1 scaffold | Later (EXPANSIONS) | AIS-OS | ballred |
 |--------------------|---------------------------|--------------------|--------|---------|
-| `inbox.md` | **`inbox.md`** ✓ | — | — | `Inbox/` folder |
+| `inbox/` | **`inbox/`** ✓ | — | — | `Inbox/` folder |
 | `profile.md` | **`profile.md`** ✓ | — | `context/` | onboard → config |
 | `daily/` | **`daily/`** ✓ | — | — | `Daily Notes/` |
 | `north-star/` | *(omit)* | `direction/` or `goals/vision.md` | — | `Goals/0. Three Year Goals.md` |
@@ -121,7 +121,7 @@ Future agents (ballred-style): `inbox-processor`, `weekly-reviewer`, `goal-align
 |---------|-------------|
 | /help | List commands; explain engine vs vault |
 | /onboard | First-run interview → profile.md |
-| /capture | Append to inbox.md |
+| /capture | New file in inbox/ |
 | /morning | Read inbox; set one focus; write daily note |
 
 See EXPANSIONS.md for planned skills.
