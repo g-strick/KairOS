@@ -11,11 +11,11 @@
   "perplexity": false,
   "jina": false,
   "git": {
-    "branching_strategy": "none",
+    "branching_strategy": "phase",
     "create_tag": true,
     "phase_branch_template": "gsd/phase-{phase}-{slug}",
     "milestone_branch_template": "gsd/{milestone}-{slug}",
-    "quick_branch_template": null
+    "quick_branch_template": "fix/{slug}"
   },
   "workflow": {
     "research": true,
@@ -49,27 +49,27 @@
   "ship": {
     "pr_body_sections": [
       {
-        "heading": "User Stories & Acceptance Criteria",
+        "heading": "Summary",
         "enabled": true,
-        "source": "REQUIREMENTS.md ## User Stories || REQUIREMENTS.md ## Acceptance Criteria",
-        "fallback": "- Acceptance criteria are covered by the linked requirements and verification evidence."
+        "source": "REQUIREMENTS.md",
+        "fallback": "- See PR template and phase success criteria in ROADMAP.md."
       },
       {
-        "heading": "Risks & Dependencies",
-        "enabled": false,
-        "source": "PLAN.md ## Risks || PLAN.md ## Dependencies",
-        "fallback": "- No known high-risk rollout dependencies."
-      },
-      {
-        "heading": "Success Metrics & Release Criteria",
+        "heading": "Requirements",
         "enabled": true,
-        "source": "REQUIREMENTS.md ## Definition of Done || VERIFICATION.md ## Release Criteria",
-        "fallback": "- Release when automated verification and required manual checks pass."
+        "source": "REQUIREMENTS.md ## v1 Requirements || REQUIREMENTS.md",
+        "fallback": "- Requirements traceability in .planning/REQUIREMENTS.md."
       },
       {
-        "heading": "Stakeholder Review & Approval",
-        "enabled": false,
-        "template": "- Product owner approval pending for {phase_name}."
+        "heading": "Test plan",
+        "enabled": true,
+        "source": "PLAN.md",
+        "fallback": "- [ ] bash test/setup.test.sh\n- [ ] bash test/m002.test.sh"
+      },
+      {
+        "heading": "Engine / vault safety",
+        "enabled": true,
+        "template": "- [ ] No vault content paths in diff\n- [ ] Pre-push hook passes"
       }
     ]
   },

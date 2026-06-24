@@ -2,8 +2,8 @@
 
 ## Context Root
 
-AGENTS.md in the vault root is the canonical context file. Every agent and skill reads it first.
-It contains the crew roster, active style pointer, and skill quick-reference. Domain knowledge loads
+AGENTS.md in the vault root is the canonical context file. Every skill reads it first.
+It contains the skill quick-reference and style pointer. Domain knowledge loads
 on demand — this file is a map, not the territory.
 
 <!-- GSD:context-root-end -->
@@ -12,7 +12,7 @@ on demand — this file is a map, not the territory.
 
 **KairOS**
 
-KairOS is a markdown-native personal operating system operated by a crew of AI agents. It organizes goals across time horizons (daily to 5-year), runs interactive cadence rituals (morning, weekly, monthly), and grounds personal development in a north-star model drawn from Future Authoring psychology. There is no app, no database, no cloud service — just plain Markdown files, agent/skill definitions, bash hooks, and git. You clone it, answer an onboarding interview, and from then on a crew of agents check in with you at different cadences, plan your day, process your captures, and sit with you for reflection.
+KairOS is a markdown-native personal operating system operated by slash commands. The lean kit ships `/help`, `/onboard`, `/capture`, and `/daily` — capture to inbox, daily check-in, with engine/vault structural separation for privacy. No app, no database: Markdown files, skills, bash hooks, and git.
 
 **Core Value:** The ritual and structure are what make a system stick. KairOS is a set of interactive check-ins at different cadences — not a screen to stare at.
 
@@ -103,6 +103,13 @@ KairOS is a markdown-native personal operating system operated by a crew of AI a
 - Engine holds only behavior (scripts, skills, agents, templates, examples) — never real content
 - `.gitignore` excludes all vault content paths; add an entry for any new content-ish path
 - All content paths must appear in `hooks/content-globs.txt` (Phase 1 Plan 03) before any hook can enforce them
+
+### Git workflow
+- **Branching:** GSD phase branches (`gsd/phase-{NN}-{slug}`); ad-hoc work on `fix/{slug}` or `docs/{slug}` off `master`
+- **Commits:** [Conventional Commits](https://www.conventionalcommits.org/) — `type(scope): subject` (e.g. `feat(capture):`, `test(01):`, `docs(02):`)
+- **PRs:** Use `.github/pull_request_template.md`; run `bash test/setup.test.sh` and `bash test/m002.test.sh` before opening
+- **Clean PRs:** `/gsd-pr-branch master` filters `.planning/` commits for reviewer-facing PRs
+- Full guide: `docs/CONTRIBUTING.md`
 <!-- GSD:conventions-end -->
 
 <!-- GSD:architecture-start source:ARCHITECTURE.md -->
@@ -137,14 +144,9 @@ kairos-engine/
 ```
 ~/kairos/
 ├── AGENTS.md              # copied from engine on setup or update
-├── inbox.md               # zero-friction capture target
-├── habits.md              # habit tracker
-├── north-star/            # desired.md, dreaded.md
-├── goals/{5year,yearly,monthly,weekly}/
-├── daily/                 # daily notes
-├── projects/              # one dir per project
-├── council/               # council member definitions (derived from projects in Phase 2)
-└── archive/               # completed/closed items
+├── inbox.md               # capture target (/capture)
+├── profile.md             # from /onboard
+└── daily/                 # daily notes (/daily)
 ```
 
 ### Key design decisions
