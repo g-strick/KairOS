@@ -1,9 +1,2 @@
-north-star
-goals/5year
-goals/yearly
-goals/monthly
-goals/weekly
+# Minimal vault directories (Phase 1). More paths are created on demand — see EXPANSIONS.md.
 daily
-projects
-council
-archive

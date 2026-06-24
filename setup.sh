@@ -162,7 +162,6 @@ if [[ -z "${KAIROS_YES:-}" ]]; then
   echo ""
   echo "  Seed files:"
   echo "    · inbox.md"
-  echo "    · habits.md"
   echo "    · AGENTS.md"
   echo ""
   echo "═══════════════════════════════════════════════════════"
@@ -184,11 +183,8 @@ for dir in "${VAULT_DIRS[@]}"; do
 done
 
 # Create seed files
-echo "# Inbox — capture anything here, then run /kairos-sort to process." \
+echo "# Inbox — capture anything here with /capture." \
   > "$VAULT_PATH/inbox.md"
-
-echo "# Habits — track daily habit streaks. Updated by the Steward." \
-  > "$VAULT_PATH/habits.md"
 
 # Copy AGENTS.md from engine
 cp "$SCRIPT_DIR/AGENTS.md" "$VAULT_PATH/AGENTS.md"
@@ -198,5 +194,5 @@ echo "✓ Vault scaffolded at $VAULT_PATH"
 echo ""
 echo "Next steps:"
 echo "  cd $VAULT_PATH"
-echo "  # Then run /kairos-onboard to complete onboarding"
+echo "  # Then run /onboard, /capture, and /daily"
 echo ""
