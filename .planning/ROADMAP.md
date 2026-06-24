@@ -56,7 +56,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User can run `/kairos-goals` and have a scaffolded goal hierarchy (5-year → yearly → monthly → weekly goal files) in their vault
   4. Standard Council agent definitions are available in the engine and accessible from the vault after `setup.sh`
 
-**Plans**: TBD
+**Plans**: 2 plans
+**Wave 1**
+
+- [ ] 02-01-PLAN.md — Fix unanchored .gitignore (un-ignore north-star/goals skills), register profile.md safety net, extend m002 gate with git-tracking assertions (Wave 1)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 02-02-PLAN.md — Commit the two skills, update AGENTS.md skill list + Council section, verify 20/20 m002 + full suite (Wave 2)
 
 ### Phase 3: Daily Rituals
 
