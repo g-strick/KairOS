@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# M002 verification script — checks all Phase 2 engine artifacts exist and are valid.
-#
-# Usage: bash test/m002.test.sh
+# M002 verification — Phase 2 daily-proof skills exist and AGENTS.md lists them.
 
 set -euo pipefail
 
@@ -20,44 +18,35 @@ check() {
     fi
 }
 
-echo "=== M002: Onboarding + North Star ==="
+echo "=== M002: Daily Proof Skills ==="
 echo ""
 
-# T01: Concierge agent
-echo "Concierge agent:"
-check "agents/concierge.md exists and is non-empty" "test -s agents/concierge.md"
-check "concierge.md has a shebang or clear role definition" "grep -q 'First contact' agents/concierge.md"
+echo "Onboard skill:"
+check "skills/onboard/SKILL.md exists" "test -s skills/onboard/SKILL.md"
+check "onboard resolves KAIROS_VAULT" "grep -q 'KAIROS_VAULT' skills/onboard/SKILL.md"
+check "onboard trigger is /onboard" "grep -q '/onboard' skills/onboard/SKILL.md"
 
-# T02: Onboarding skill
-echo "Onboarding skill:"
-check "skills/onboarding/SKILL.md exists and is non-empty" "test -s skills/onboarding/SKILL.md"
-check "onboarding skill resolves KAIROS_VAULT" "grep -q 'KAIROS_VAULT' skills/onboarding/SKILL.md"
-check "onboarding skill has vault path check" "grep -q 'Vault not found' skills/onboarding/SKILL.md"
+echo "Capture skill:"
+check "skills/capture/SKILL.md exists" "test -s skills/capture/SKILL.md"
+check "capture writes to inbox.md" "grep -q 'inbox.md' skills/capture/SKILL.md"
 
-# T03: North-star skill
-echo "North-star skill:"
-check "skills/north-star/SKILL.md exists and is non-empty" "test -s skills/north-star/SKILL.md"
-check "north-star skill resolves KAIROS_VAULT" "grep -q 'KAIROS_VAULT' skills/north-star/SKILL.md"
-check "north-star skill writes desired.md" "grep -q 'desired.md' skills/north-star/SKILL.md"
-check "north-star skill writes dreaded.md" "grep -q 'dreaded.md' skills/north-star/SKILL.md"
+echo "Daily skill:"
+check "skills/daily/SKILL.md exists" "test -s skills/daily/SKILL.md"
+check "daily reads inbox" "grep -q 'inbox' skills/daily/SKILL.md"
+check "daily writes daily/" "grep -q 'daily/' skills/daily/SKILL.md"
 
-# T04: Goals skill
-echo "Goals skill:"
-check "skills/goals/SKILL.md exists and is non-empty" "test -s skills/goals/SKILL.md"
-check "goals skill resolves KAIROS_VAULT" "grep -q 'KAIROS_VAULT' skills/goals/SKILL.md"
-check "goals skill creates index.md" "grep -q 'index.md' skills/goals/SKILL.md"
+echo "Help skill:"
+check "skills/help/SKILL.md exists" "test -s skills/help/SKILL.md"
+check "help trigger is /help" "grep -q '/help' skills/help/SKILL.md"
 
-# T05: Council agents
-echo "Council agents:"
-check "agents/life-coach.md exists and is non-empty" "test -s agents/life-coach.md"
-check "agents/strategic-advisor.md exists and is non-empty" "test -s agents/strategic-advisor.md"
-check "agents/accountability-partner.md exists and is non-empty" "test -s agents/accountability-partner.md"
-
-# T06: AGENTS.md updated
 echo "AGENTS.md:"
-check "AGENTS.md references Concierge" "grep -q 'Concierge' AGENTS.md"
-check "AGENTS.md lists skills" "grep -q '/kairos-onboard' AGENTS.md"
-check "AGENTS.md lists Council agents" "grep -q 'Life Coach' AGENTS.md"
+check "AGENTS.md lists /onboard" "grep -q '/onboard' AGENTS.md"
+check "AGENTS.md lists /capture" "grep -q '/capture' AGENTS.md"
+check "AGENTS.md lists /daily" "grep -q '/daily' AGENTS.md"
+check "AGENTS.md has no crew table" "! grep -q '## Crew' AGENTS.md"
+
+echo "Parked agents removed:"
+check "no concierge agent file" "! test -f agents/concierge.md"
 
 echo ""
 echo "Results: $PASS passed, $FAIL failed"
