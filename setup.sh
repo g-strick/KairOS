@@ -2,7 +2,7 @@
 # setup.sh — Interactive vault scaffolder for KairOS.
 #
 # Usage:
-#   ./setup.sh              # prompts for vault path (default ~/kairos)
+#   ./setup.sh              # prompts for vault path (default ~/kairos-vault)
 #   ./setup.sh ~/my-vault   # scaffolds at the given path
 #
 # Environment overrides (for non-interactive / test use):
@@ -16,6 +16,8 @@ set -euo pipefail
 # ── Resolve repo root (directory containing this script) ──
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VAULT_DIRS_FILE="$SCRIPT_DIR/templates/vault-dirs.txt"
+VAULT_SEEDS_DIR="$SCRIPT_DIR/templates/vault-seeds"
+MIGRATE_INBOX="$SCRIPT_DIR/scripts/migrate-inbox-md.sh"
 
 # ── Bash 5.x check ──
 check_bash_version() {
@@ -97,7 +99,7 @@ read_vault_dirs
 
 # Determine vault path
 VAULT_PATH=""
-prompt_text "VAULT_PATH" "Where should I create your KairOS vault?" "$HOME/kairos"
+prompt_text "VAULT_PATH" "Where should I create your Kairos Vault?" "$HOME/kairos-vault"
 VAULT_PATH="$VAULT_PATH"
 
 # Expand ~ to $HOME
@@ -137,6 +139,10 @@ if [[ -d "$VAULT_PATH" ]] && [[ -n "$(ls -A "$VAULT_PATH" 2>/dev/null)" ]]; then
       echo ""
       echo "Run the sync script to pull engine updates:"
       echo "  $SCRIPT_DIR/update.sh $VAULT_PATH"
+      if [[ -f "$VAULT_PATH/inbox.md" && ! -d "$VAULT_PATH/inbox" ]]; then
+        echo ""
+        echo "Note: legacy inbox.md detected. After update, move captures into inbox/ or re-run setup on a fresh vault."
+      fi
       exit 1
       ;;
     *)
@@ -150,7 +156,7 @@ fi
 if [[ -z "${KAIROS_YES:-}" ]]; then
   echo ""
   echo "═══════════════════════════════════════════════════════"
-  echo "  KairOS Vault Setup"
+  echo "  Kairos Vault Setup"
   echo "═══════════════════════════════════════════════════════"
   echo ""
   echo "  Vault path:  $VAULT_PATH"
@@ -161,8 +167,10 @@ if [[ -z "${KAIROS_YES:-}" ]]; then
   done
   echo ""
   echo "  Seed files:"
-  echo "    · inbox.md"
-  echo "    · AGENTS.md"
+  echo "    · inbox/README.md"
+  echo "    · next-actions.md, waiting-for.md, someday-maybe.md"
+  echo "    · projects/README.md, reference/README.md"
+  echo "    · VAULT.md, INDEX.md, AGENTS.md"
   echo ""
   echo "═══════════════════════════════════════════════════════"
   echo ""
@@ -182,17 +190,44 @@ for dir in "${VAULT_DIRS[@]}"; do
   mkdir -p "$VAULT_PATH/$dir"
 done
 
-# Create seed files
-echo "# Inbox — capture anything here with /capture." \
-  > "$VAULT_PATH/inbox.md"
+# Seed GTD files from templates
+cp "$VAULT_SEEDS_DIR/inbox-README.md" "$VAULT_PATH/inbox/README.md"
+cp "$VAULT_SEEDS_DIR/next-actions.md" "$VAULT_PATH/next-actions.md"
+cp "$VAULT_SEEDS_DIR/waiting-for.md" "$VAULT_PATH/waiting-for.md"
+cp "$VAULT_SEEDS_DIR/someday-maybe.md" "$VAULT_PATH/someday-maybe.md"
+cp "$VAULT_SEEDS_DIR/projects-README.md" "$VAULT_PATH/projects/README.md"
+cp "$VAULT_SEEDS_DIR/reference-README.md" "$VAULT_PATH/reference/README.md"
+cp "$VAULT_SEEDS_DIR/VAULT.md" "$VAULT_PATH/VAULT.md"
+cp "$VAULT_SEEDS_DIR/INDEX.md" "$VAULT_PATH/INDEX.md"
+
+mkdir -p "$VAULT_PATH/_kair"
+cp "$VAULT_SEEDS_DIR/_kair-README.md" "$VAULT_PATH/_kair/README.md"
 
 # Copy AGENTS.md from engine
 cp "$SCRIPT_DIR/AGENTS.md" "$VAULT_PATH/AGENTS.md"
+
+# Seed agent rules — prevent AI tools from editing vault dotfiles or _kair/
+mkdir -p "$VAULT_PATH/.claude"
+cp "$VAULT_SEEDS_DIR/.claude/CLAUDE.md" "$VAULT_PATH/.claude/CLAUDE.md"
+mkdir -p "$VAULT_PATH/.cursor/rules"
+cp "$VAULT_SEEDS_DIR/.cursor/rules/vault-rules.mdc" "$VAULT_PATH/.cursor/rules/vault-rules.mdc"
+cp "$VAULT_SEEDS_DIR/.clinerules" "$VAULT_PATH/.clinerules"
+
+# Record engine location so /kair-update and update.sh can find it from the vault
+echo "$SCRIPT_DIR" > "$VAULT_PATH/.engine-root"
+
+# GitHub remote for sandbox / vault-only updates when .engine-root is unavailable
+echo "https://github.com/g-strick/KairOS.git" > "$VAULT_PATH/.engine-remote"
+echo "main" > "$VAULT_PATH/.engine-branch"
+
+# Migrate any legacy inbox.md left in a partial scaffold
+bash "$MIGRATE_INBOX" "$VAULT_PATH"
 
 echo ""
 echo "✓ Vault scaffolded at $VAULT_PATH"
 echo ""
 echo "Next steps:"
 echo "  cd $VAULT_PATH"
-echo "  # Then run /onboard, /capture, and /daily"
+echo "  # Then run /kair-onboard, /kair-capture, and /kair-daily"
+echo "  # macOS 13+: brew install rem-cli jq for /kair-triage and /kair-publish"
 echo ""

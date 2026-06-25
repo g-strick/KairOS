@@ -14,7 +14,8 @@
 
 - [ ] `bash test/setup.test.sh`
 - [ ] `bash test/m002.test.sh`
-- [ ] Manual: <!-- e.g. ./setup.sh to temp dir, run /capture in vault -->
+- [ ] `bash test/license-guard.test.sh`
+- [ ] Manual: <!-- e.g. ./setup.sh to temp dir, run /kair-capture in vault -->
 
 ## Engine / vault safety
 

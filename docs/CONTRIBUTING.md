@@ -108,7 +108,7 @@ feat(01-01): implement setup.sh minimal vault
 
 ### Before opening
 
-1. Run tests: `bash test/setup.test.sh` and `bash test/m002.test.sh` (add others as they land).
+1. Run tests: `bash test/setup.test.sh`, `bash test/m002.test.sh`, and `bash test/license-guard.test.sh` (add others as they land).
 2. Confirm no vault content in the diff: `git diff --name-only master` should not list `inbox.md`, `daily/`, etc.
 3. For public-facing PRs, consider `/gsd-pr-branch` to drop `.planning/` churn.
 
@@ -143,9 +143,10 @@ The template in `.github/pull_request_template.md` is the source of truth. At mi
 
 | Never in engine PRs | Why |
 |---------------------|-----|
-| `~/kairos/` content | Private life data |
+| `~/kairos-vault/` content | Private life data |
 | Unrelated scope creep | Keep PRs reviewable |
 | AIS-OS / other projects' trademarked framework text | IP hygiene |
+| `LICENSE`, `LICENSE.md`, or `SPDX-License-Identifier` headers | License undecided — run `bash test/license-guard.test.sh` |
 | Psychology attribution you cut from product scope | Editorial consistency |
 
 ---
@@ -157,7 +158,7 @@ The template in `.github/pull_request_template.md` is the source of truth. At mi
 /gsd-execute-phase 1
 
 # Tests
-bash test/setup.test.sh && bash test/m002.test.sh
+bash test/setup.test.sh && bash test/m002.test.sh && bash test/license-guard.test.sh
 
 # Clean PR branch
 /gsd-pr-branch master

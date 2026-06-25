@@ -19,12 +19,13 @@
 - [ ] **DAILY-01**: `/onboard` — interview writes `profile.md` (name, timezone)
 - [ ] **DAILY-02**: `/capture` — append-only to `inbox.md`; no categorization; under 10 seconds
 - [ ] **DAILY-03**: `/daily` — reads inbox, sets one focus, writes `daily/YYYY-MM-DD.md`; ≤5 min
+- [ ] **INTG-01**: `read-reminders.sh` — read-only Apple Reminders bridge (macOS); surfaced in `/kair-daily`; graceful skip on Linux/TCC denial
 
 ---
 
 ## Parked (EXPANSIONS.md — not v1)
 
-Sort, weekly, monthly, evening, goals, status/dashboard, habits, integrations, styles, agents, archive/cleanup — promote through GSD planning when ready.
+Sort, weekly, monthly, evening, goals, status/dashboard, habits, Apple Calendar bridge, styles, agents, archive/cleanup — promote through GSD planning when ready.
 
 ---
 
@@ -52,8 +53,9 @@ Sort, weekly, monthly, evening, goals, status/dashboard, habits, integrations, s
 | DAILY-01 | Phase 2 | Pending |
 | DAILY-02 | Phase 2 | Pending |
 | DAILY-03 | Phase 2 | Pending |
+| INTG-01 | Phase 3 | Pending |
 
-**Coverage:** 8 v1 requirements, all mapped ✓
+**Coverage:** 9 v1+ requirements, all mapped ✓
 
 ---
 *Last updated: 2026-06-24*

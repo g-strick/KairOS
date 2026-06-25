@@ -1,0 +1,27 @@
+---
+description: KairOS vault rules — protect dotfiles, route engine changes to the engine repo
+globs:
+alwaysApply: true
+---
+
+# KairOS Vault Rules
+
+This is a **personal knowledge vault**, not a software project.
+KairOS engine code (skills, hooks, templates) lives in a separate repo.
+
+## You may edit
+
+- Markdown content files: `inbox/`, `daily/`, `projects/`, `reference/`
+- GTD lists: `next-actions.md`, `waiting-for.md`, `someday-maybe.md`
+- Profile: `profile.md`
+
+## Do NOT edit or delete
+
+- Dotfiles and dotdirectories: `.cursor/`, `.claude/`, `.cline/`, `.gitignore`,
+  `.engine-root`, `.engine-remote`, `.engine-branch`, `.clinerules`
+- Anything under `_kair/` — engine-synced; changes will be overwritten on `/kair-update`
+
+## Engine changes
+
+If a skill, hook, or template needs to change, do not edit `_kair/`.
+Say: **"This requires a KairOS engine update — open the engine repo."**

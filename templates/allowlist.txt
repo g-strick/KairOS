@@ -1,3 +1,5 @@
+# Allowlist manifest — engine paths update.sh may copy into the vault.
+# Directory entries are installed under _kair/ (PKM meta convention); AGENTS.md stays at vault root.
 skills/
 agents/
 hooks/

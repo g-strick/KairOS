@@ -1,2 +1,5 @@
-# Minimal vault directories (Phase 1). More paths are created on demand — see EXPANSIONS.md.
+# Minimal vault directories. GTD paths support /kair-triage and /kair-publish.
 daily
+inbox
+projects
+reference

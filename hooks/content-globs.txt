@@ -1,12 +1,17 @@
 # Vault content globs — matched against tracked files; pre-push aborts on hit.
 # Directory patterns are unanchored here because the hook matches path substrings.
 daily/
+inbox/
 north-star/
 goals/
 projects/
+reference/
 council/
 archive/
 inbox.md
+next-actions.md
+waiting-for.md
+someday-maybe.md
 profile.md
 habits.md
 desired.md

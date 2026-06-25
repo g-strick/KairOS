@@ -12,7 +12,7 @@ on demand — this file is a map, not the territory.
 
 **KairOS**
 
-KairOS is a markdown-native personal operating system operated by slash commands. The lean kit ships `/help`, `/onboard`, `/capture`, and `/daily` — capture to inbox, daily check-in, with engine/vault structural separation for privacy. No app, no database: Markdown files, skills, bash hooks, and git.
+KairOS is a markdown-native personal operating system operated by slash commands. The lean kit ships `/kair-help`, `/kair-onboard`, `/kair-capture`, and `/kair-daily` — capture to inbox, daily check-in, with engine/vault structural separation for privacy. No app, no database: Markdown files, skills, bash hooks, and git.
 
 **Core Value:** The ritual and structure are what make a system stick. KairOS is a set of interactive check-ins at different cadences — not a screen to stare at.
 
@@ -92,7 +92,7 @@ KairOS is a markdown-native personal operating system operated by slash commands
 
 ### Testing
 - Pure-bash test harness: source `test/lib/assert.sh` for `assert_dir`, `assert_file`, `assert_eq`, `assert_exit_code`
-- Tests drive scripts non-interactively via stdin piping and `KAIROS_*` env overrides; never touch `~/kairos`
+- Tests drive scripts non-interactively via stdin piping and `KAIROS_*` env overrides; never touch `~/kairos-vault`
 - TDD convention: commit failing (RED) test before implementing, then make it GREEN
 
 ### Templates and single source of truth
@@ -119,7 +119,7 @@ KairOS is a markdown-native personal operating system operated by slash commands
 ### Engine directory layout (Phase 1 complete)
 
 ```
-kairos-engine/
+KairOS/
 ├── setup.sh               # interactive vault scaffolder (Phase 1)
 ├── update.sh              # allowlist-based engine→vault sync (Phase 1 Plan 03, pending)
 ├── install-hooks.sh       # installs hooks into vault (Phase 1 Plan 03, pending)
@@ -142,11 +142,11 @@ kairos-engine/
 ### Vault layout (created by setup.sh)
 
 ```
-~/kairos/
+~/kairos-vault/
 ├── AGENTS.md              # copied from engine on setup or update
-├── inbox.md               # capture target (/capture)
-├── profile.md             # from /onboard
-└── daily/                 # daily notes (/daily)
+├── inbox.md               # capture target (/kair-capture)
+├── profile.md             # from /kair-onboard
+└── daily/                 # daily notes (/kair-daily)
 ```
 
 ### Key design decisions

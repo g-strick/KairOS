@@ -69,14 +69,15 @@ RC1=$?
 set -e
 
 if [ "$RC1" -eq 0 ]; then
-  # Assert allowlisted content arrived
-  assert_dir "$VAULT/skills" "skills/ directory exists in vault"
-  assert_file "$VAULT/skills/SKILL.md" "skills/SKILL.md exists in vault"
-  assert_dir "$VAULT/agents" "agents/ directory exists in vault"
-  assert_file "$VAULT/agents/.gitkeep" "agents/.gitkeep exists in vault"
-  assert_dir "$VAULT/hooks" "hooks/ directory exists in vault"
-  assert_dir "$VAULT/styles" "styles/ directory exists in vault"
-  assert_file "$VAULT/AGENTS.md" "AGENTS.md exists in vault"
+  # Assert allowlisted content arrived under _kair/
+  assert_dir "$VAULT/_kair/skills" "skills/ directory exists in vault"
+  assert_file "$VAULT/_kair/skills/SKILL.md" "skills/SKILL.md exists in vault"
+  assert_dir "$VAULT/_kair/agents" "agents/ directory exists in vault"
+  assert_file "$VAULT/_kair/agents/.gitkeep" "agents/.gitkeep exists in vault"
+  assert_dir "$VAULT/_kair/hooks" "hooks/ directory exists in vault"
+  assert_dir "$VAULT/_kair/styles" "styles/ directory exists in vault"
+  assert_file "$VAULT/AGENTS.md" "AGENTS.md exists at vault root"
+  assert_not_exists "$VAULT/skills" "legacy vault-root skills/ should not exist"
 else
   # EXPECTED FAIL: update.sh does not exist yet (RED step)
   assert_exit_code 0 "bash $UPDATE_SH $ENGINE_SRC $VAULT" "update.sh should exist and run"
@@ -99,7 +100,7 @@ echo "TEST 3: Strict overwrite — engine version wins"
 
 if [ "$RC1" -eq 0 ]; then
   # Modify the file in vault to something different
-  echo "vault custom content" > "$VAULT/skills/SKILL.md"
+  echo "vault custom content" > "$VAULT/_kair/skills/SKILL.md"
 
   # Run update again
   set +e
@@ -107,7 +108,7 @@ if [ "$RC1" -eq 0 ]; then
   set -e
 
   # Engine version should have overwritten vault version
-  assert_file "$VAULT/skills/SKILL.md" "skills/SKILL.md still exists after re-sync"
+  assert_file "$VAULT/_kair/skills/SKILL.md" "skills/SKILL.md still exists after re-sync"
 else
   echo "  SKIPPED (RED): update.sh not yet implemented"
 fi
@@ -122,8 +123,37 @@ if [ "$RC1" -eq 0 ]; then
   set +e
   KAIROS_VAULT="$VAULT2" GSD_ENGINE_ROOT="$ENGINE_SRC" bash "$UPDATE_SH"
   set -e
-  assert_dir "$VAULT2/skills" "skills/ exists with env override"
+  assert_dir "$VAULT2/_kair/skills" "skills/ exists with env override"
   assert_file "$VAULT2/AGENTS.md" "AGENTS.md exists with env override"
+else
+  echo "  SKIPPED (RED): update.sh not yet implemented"
+fi
+
+# --- Test 5: Remote fetch when .engine-root is missing ---
+echo "TEST 5: Remote fetch via file:// when .engine-root is invalid"
+
+VAULT3=$(mktemp -d)
+trap 'rm -rf "$ENGINE_SRC" "$VAULT" "$VAULT2" "$VAULT3"' EXIT
+
+if [ "$RC1" -eq 0 ]; then
+  mkdir -p "$VAULT3/inbox"
+  echo "# Vault" > "$VAULT3/AGENTS.md"
+  echo "/nonexistent/engine/path" > "$VAULT3/.engine-root"
+  echo "file://$ENGINE_SRC" > "$VAULT3/.engine-remote"
+  echo "main" > "$VAULT3/.engine-branch"
+
+  set +e
+  bash "$UPDATE_SH" "$VAULT3"
+  RC5=$?
+  set -e
+
+  if [ "$RC5" -eq 0 ]; then
+    assert_dir "$VAULT3/_kair/skills" "remote fetch synced skills/"
+    assert_file "$VAULT3/AGENTS.md" "remote fetch synced AGENTS.md"
+  else
+    echo "  FAIL: vault-only update with file:// remote should succeed"
+    FAILED=$((FAILED + 1))
+  fi
 else
   echo "  SKIPPED (RED): update.sh not yet implemented"
 fi

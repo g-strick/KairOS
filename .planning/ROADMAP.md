@@ -8,6 +8,7 @@ Two phases close the lean v1 kit. Phase 1 makes the engine cloneable and the vau
 
 - [ ] **Phase 1: Foundation** — Engine/vault structure is cloneable, scaffoldable, and structurally safe
 - [ ] **Phase 2: Daily proof** — User can onboard, capture, and run a daily check-in that reads inbox
+- [ ] **Phase 3: Reminders bridge** — Read-only Apple Reminders integration in `/kair-daily`
 
 ## Phase Details
 
@@ -41,9 +42,23 @@ Two phases close the lean v1 kit. Phase 1 makes the engine cloneable and the vau
 
 **Plans**: TBD — replace obsolete `02-onboarding-north-star` plans
 
+### Phase 3: Reminders bridge
+
+**Goal**: `/kair-daily` surfaces due-today and overdue Apple Reminders on macOS without breaking Linux or permission-denied cases  
+**Depends on**: Phase 2  
+**Requirements**: INTG-01  
+
+**Success Criteria**:
+
+1. `hooks/read-reminders.sh` prints markdown for due/overdue reminders via `osascript`
+2. Non-macOS and TCC-denied runs exit 0 with actionable stderr
+3. `/kair-daily` includes a `## Reminders` section in today's note
+
+**Plans**: TBD
+
 ## Parked
 
-See `docs/EXPANSIONS.md`. No Phase 3+ until items are promoted via GSD.
+See `docs/EXPANSIONS.md`. No Phase 4+ until items are promoted via GSD.
 
 ## Progress
 
@@ -51,3 +66,4 @@ See `docs/EXPANSIONS.md`. No Phase 3+ until items are promoted via GSD.
 |-------|----------------|--------|
 | 1. Foundation | 0/3 | Not started |
 | 2. Daily proof | 0/TBD | Not started |
+| 3. Reminders bridge | 0/TBD | Not started |

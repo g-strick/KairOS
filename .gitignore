@@ -2,19 +2,27 @@
 # Patterns are anchored (leading /) so engine paths like skills/goals/ stay visible to git.
 
 /daily/
+/inbox/
 /north-star/
 /goals/
 /projects/
+/reference/
 /council/
 /archive/
 
 /inbox.md
+/next-actions.md
+/waiting-for.md
+/someday-maybe.md
 /profile.md
 /habits.md
 
 # Example and placeholder files still ship
 !*.example.md
 !.gitkeep
+
+# Test harness scratch dirs
+/test/tmp/
 
 # GSD / local dev tooling (not part of the shipped engine)
 .gsd-id
